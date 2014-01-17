@@ -89,6 +89,7 @@ window.onload = function() {
         ctx.moveTo(boardwidth*5/8 + 105, 250);
         ctx.lineTo(boardwidth*5/8 + 65, 300);
         ctx.stroke();
+        break;
       case 10:
         // right leg
         ctx.beginPath();
@@ -101,13 +102,14 @@ window.onload = function() {
     }
   }
   function paintCanvas() {
+    console.log("in paintcanvas()");
     ctx.clearRect (0, 0, boardwidth, boardheight);
     // paint background
     ctx.strokeStyle = "black";
     ctx.strokeRect(0, 0, boardwidth, boardheight);
 
     // paint guess
-    console.log(currentGuess);
+    console.log("current guess" + currentGuess);
     ctx.font = "30px Arial";
     ctx.fillStyle = "black";
     for (var i = 0; i < currentGuess.length; i++) {
@@ -139,13 +141,19 @@ window.onload = function() {
   }
 
   function pickLetter(letter) {
+    console.log("in pickletter: " + letter);
     // remove from board
     for (var i = 0; i < currentBoard.length; i++) {
       if (letter == currentBoard[i]) {
+        console.log("setting to empty");
+        console.log(currentBoard[i]);
         // Set to empty string
-        currentBoard == "";
+        currentBoard[i] = '';
+        console.log(currentBoard);
+        break;
       }
     }
+    console.log(currentBoard);
   }
 
   function checkLetter(letter) {
@@ -182,17 +190,20 @@ window.onload = function() {
   }
 
   canvas.addEventListener("click", function(e) {
-    if (e.x > boardX && e.x < 8*cellwidth && e.y > boardY && e.y < boardY + 5*cellwidth) {
+    var x = e.clientX - canvas.offsetLeft;
+    var y = e.clientY - canvas.offsetTop;
+    if (x > boardX && x < 8*cellwidth && y > boardY && y < boardY + 5*cellwidth) {
       // get grid index from pixels
-      console.log("e.x: " + e.x + " e.y: " + e.y);
-      var col = Math.floor((e.x - boardX) / cellwidth);
-      var row = Math.floor((e.y - boardY) / cellwidth);
+      console.log("e.x: " + x + " e.y: " + y);
+      var col = Math.floor((x - boardX) / cellwidth);
+      var row = Math.floor((y - boardY) / cellwidth);
       var index = row*7 + col;
       if (index < currentBoard.length) {
+        var letter = currentBoard[index];
         if (currentBoard[index] != "") {
           console.log(currentBoard[index]);
-          pickLetter(currentBoard[index]);
-          checkLetter(currentBoard[index]);
+          pickLetter(letter);
+          checkLetter(letter);
           paintCanvas();
         }
       }
@@ -202,15 +213,15 @@ window.onload = function() {
   function init() {
     numGuesses = 0;
     currentWord = "ABATE".split("");
-    maxGuesses = currentWord.length;
+    maxGuesses = 10;
     currentGuess = new Array(currentWord.length);
     for (var i = 0; i < currentGuess.length; i++) {
       currentGuess[i] = "";
     }
 
     currentGuess = ["A","", "A", "", ""];
-    currentBoard = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N",
-                    "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+    currentBoard = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+                    'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
     paintCanvas();
 
   }
